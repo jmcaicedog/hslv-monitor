@@ -9,7 +9,7 @@ export default function Layout({ children }) {
     async function loadLocations() {
       try {
         const data = await fetchSensorsData();
-        const uniqueLocations = [...new Set(data.map(channel => channel.description))]; // Filtra duplicados
+        const uniqueLocations = [...new Set(data.map(channel => channel.description))]; // 🔹 Filtra ubicaciones duplicadas
         setLocations(uniqueLocations);
       } catch (error) {
         console.error("Error al cargar ubicaciones:", error);
