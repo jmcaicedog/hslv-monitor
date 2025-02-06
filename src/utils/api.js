@@ -2,7 +2,8 @@ export async function fetchSensorsData() {
     const response = await fetch(
       `https://webapi.ubibot.com/channels?account_key=${process.env.NEXT_PUBLIC_UBIBOT_KEY}`
     );
-  
+    console.log("API Key en producción:", process.env.NEXT_PUBLIC_UBIBOT_KEY);
+
     if (!response.ok) {
       throw new Error("Error al obtener los datos de la API");
     }
