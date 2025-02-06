@@ -1,13 +1,14 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import Card from "@/components/Card";
+import SearchBar from "@/components/SearchBar";
 import { fetchSensorsData } from "@/utils/api";
 
 export default function Home() {
   const [sensors, setSensors] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState(null); // 🔹 Estado para la ubicación seleccionada
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function loadSensors() {
@@ -21,10 +22,11 @@ export default function Home() {
     loadSensors();
   }, []);
 
-  // 🔹 Filtrar sensores por ubicación seleccionada
-  const filteredSensors = selectedLocation 
-    ? sensors.filter(sensor => sensor.description === selectedLocation) 
-    : sensors;
+  // Filtrar sensores por ubicación seleccionada y término de búsqueda
+  const filteredSensors = sensors.filter(sensor => 
+    (!selectedLocation || sensor.description === selectedLocation) &&
+    (searchTerm === "" || sensor.title.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
     <Layout onSelectLocation={setSelectedLocation}>
@@ -34,6 +36,10 @@ export default function Home() {
           ? `📍 Mostrando sensores de: ${selectedLocation}` 
           : "🌍 Mostrando todos los sensores"}
       </p>
+
+      {/* Componente de barra de búsqueda */}
+      <SearchBar value={searchTerm} onChange={setSearchTerm} />
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {filteredSensors.map(sensor => (
           <Card key={sensor.id || sensor.title} {...sensor} />
