@@ -15,7 +15,16 @@ export default function Home() {
     async function loadSensors() {
       try {
         const data = await fetchSensorsData();
-        setSensors(data);
+        // Redondear valores a 2 decimales
+        const formattedData = data.map(sensor => ({
+          ...sensor,
+          temperature: sensor.temperature ? parseFloat(sensor.temperature).toFixed(2) : "N/A",
+          humidity: sensor.humidity ? parseFloat(sensor.humidity).toFixed(2) : "N/A",
+          voltage: sensor.voltage ? parseFloat(sensor.voltage).toFixed(2) : "N/A",
+          pressure: sensor.pressure ? parseFloat(sensor.pressure).toFixed(2) : null,
+          light: sensor.light ? parseFloat(sensor.light).toFixed(2) : null,
+        }));
+        setSensors(formattedData);
       } catch (error) {
         console.error("Error al cargar los sensores:", error);
       }
@@ -48,11 +57,11 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {filteredSensors.map(sensor => (
               <Card 
-              key={sensor.id || sensor.title} 
-              {...sensor} 
-              showPressureAndLight={sensor.pressure !== undefined && sensor.light !== undefined && sensor.pressure !== null && sensor.light !== null && sensor.pressure !== '' && sensor.light !== ''} 
-            />
-            
+                key={sensor.id || sensor.title} 
+                {...sensor} 
+                showPressureAndLight={sensor.pressure !== undefined && sensor.light !== undefined} 
+                layout="iconsOnly"
+              />
             ))}
           </div>
         </div>
