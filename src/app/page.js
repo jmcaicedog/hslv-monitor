@@ -47,7 +47,12 @@ export default function Home() {
           <SearchBar value={searchTerm} onChange={setSearchTerm} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {filteredSensors.map(sensor => (
-              <Card key={sensor.id || sensor.title} {...sensor} />
+              <Card 
+              key={sensor.id || sensor.title} 
+              {...sensor} 
+              showPressureAndLight={sensor.pressure !== undefined && sensor.light !== undefined && sensor.pressure !== null && sensor.light !== null && sensor.pressure !== '' && sensor.light !== ''} 
+            />
+            
             ))}
           </div>
         </div>
