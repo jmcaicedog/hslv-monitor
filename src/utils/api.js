@@ -24,7 +24,7 @@ export async function fetchSensorsData() {
         temperature: sensorData.field1?.value ?? "N/A",
         humidity: sensorData.field2?.value ?? "N/A",
         voltage: sensorData.field3?.value ?? "N/A",
-        pressure: sensorData.field7?.value ?? null, // Presión atmosférica si existe
+        pressure: sensorData.field10?.value ?? null, // Presión atmosférica si existe
         light: sensorData.field6?.value ?? null, // Luz si existe
         createdAt: sensorData.field1?.created_at ?? "N/A",
       };

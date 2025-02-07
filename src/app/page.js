@@ -43,7 +43,7 @@ export default function Home() {
       <div className="flex">
         {/* Componente de menú lateral fijo sin scrollbar visible y con menor espacio entre elementos */}
         <div className="w-64 fixed h-full overflow-hidden bg-gray-800 text-white p-4">
-          <Sidebar locations={sensors.map(s => s.description)} onSelectLocation={setSelectedLocation} itemSpacing="space-y-0.5" />
+          <Sidebar locations={sensors.map(s => s.description)} onSelectLocation={setSelectedLocation} itemSpacing="space-y-0" />
         </div>
         <div className="flex-1 p-6 ml-64">
           <h1 className="text-2xl font-bold mb-4">Dashboard de Sensores</h1>
