@@ -61,7 +61,7 @@ const SensorDetail = () => {
     const startTime = new Date(now.getTime() - timeRange * 60 * 60 * 1000);
     
     const filtered = data.filter(entry => entry.timestamp >= startTime);
-    setFilteredData(filtered);
+    setFilteredData(filtered.reverse());
 
     // Calcular valores mínimos y máximos solo de las variables presentes
     const minMaxValues = {};
