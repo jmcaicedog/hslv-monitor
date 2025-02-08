@@ -9,6 +9,7 @@ const SensorDetail = () => {
   const id = params?.id;
   const [data, setData] = useState([]);
   const [minMax, setMinMax] = useState({});
+  const [sensorName, setSensorName] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -19,14 +20,19 @@ const SensorDetail = () => {
         
         if (!jsonData.feeds) return;
         
+        // Obtener el nombre del sensor
+        if (jsonData.channel && jsonData.channel.name) {
+          setSensorName(jsonData.channel.name);
+        }
+
         // Extraer datos de los feeds solo si existen
         const formattedData = jsonData.feeds.map(feed => {
           let entry = { timestamp: feed.created_at };
           if (feed.field1) entry.temperatura = feed.field1.avg;
           if (feed.field2) entry.humedad = feed.field2.avg;
           if (feed.field3) entry.voltaje = feed.field3.avg;
-          if (feed.field9) entry.presion = feed.field9.avg;
-          if (feed.field6) entry.luz = feed.field6.avg;
+          if (feed.field4) entry.presion = feed.field4.avg;
+          if (feed.field5) entry.luz = feed.field5.avg;
           return entry;
         }).filter(entry => Object.keys(entry).length > 1);
 
@@ -56,7 +62,7 @@ const SensorDetail = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold">Detalles del Sensor {id}</h1>
+      <h1 className="text-2xl font-bold">{sensorName || id}</h1>
       {data.length > 0 ? (
         Object.keys(minMax).map((key) => (
           <div key={key} className="my-6">
