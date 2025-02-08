@@ -1,11 +1,9 @@
 import { FaTemperatureHigh, FaTint, FaBolt, FaCompressArrowsAlt, FaLightbulb } from "react-icons/fa";
-import { useState } from "react";
-
 export default function Card({ title, temperature, humidity, voltage, pressure, light, createdAt, showPressureAndLight }) {
   return (
     <div className="bg-white shadow-md p-4 rounded-lg flex flex-col items-center w-full max-w-md mx-auto">
-      <h3 className="text-lg font-semibold mb-2 text-center">{title}</h3>
-      <div className="flex flex-wrap justify-center w-full gap-4">
+      <p className="text-sm font-semibold mb-3 text-center">{title}</p>
+      <div className="flex flex-wrap justify-center w-full gap-2">
         <div className="flex flex-col items-center">
           <FaTemperatureHigh className="text-red-500 text-xl" />
           <p className="text-sm">{temperature}°C</p>
