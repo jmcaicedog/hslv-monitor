@@ -1,13 +1,28 @@
+import { useState } from "react";
 export default function Sidebar({ locations, onSelectLocation }) {
-    const uniqueLocations = [...new Set(locations)]; // Elimina duplicados
-  
-    return (
-      <aside className="w-64 bg-gray-800 text-white p-4">
+  const [isOpen, setIsOpen] = useState(false);
+  const uniqueLocations = [...new Set(locations)];
+
+  return (
+    <>
+      <button 
+        className={`fixed top-4 right-4 z-50 bg-gray-700 text-white px-4 py-2 rounded-md sm:hidden ${isOpen ? "hidden" : "block"}`}
+        onClick={() => setIsOpen(true)}
+      >
+        ☰
+      </button>
+      <aside className={`fixed inset-0 bg-gray-800 text-white p-4 transition-transform transform ${isOpen ? "translate-x-0" : "-translate-x-full"} sm:relative sm:w-1/4 md:w-1/5 lg:w-full sm:translate-x-0 md:translate-x-0`}>
+        <button 
+          className="absolute top-4 right-4 text-white text-2xl sm:hidden"
+          onClick={() => setIsOpen(false)}
+        >
+          ✖
+        </button>
         <h2 className="text-xl font-bold">Ubicaciones</h2>
         <ul className="mt-4 space-y-2">
           <li 
             className="cursor-pointer hover:bg-gray-700 p-2 rounded font-bold"
-            onClick={() => onSelectLocation(null)}
+            onClick={() => { onSelectLocation(null); setIsOpen(false); }}
           >
             🔄 Mostrar Todos
           </li>
@@ -15,13 +30,13 @@ export default function Sidebar({ locations, onSelectLocation }) {
             <li 
               key={index} 
               className="cursor-pointer hover:bg-gray-700 p-2 rounded"
-              onClick={() => onSelectLocation(location)}
+              onClick={() => { onSelectLocation(location); setIsOpen(false); }}
             >
-              {location}
+              📍 {location}
             </li>
           ))}
         </ul>
       </aside>
-    );
-  }
-  
+    </>
+  );
+}

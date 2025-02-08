@@ -1,8 +1,8 @@
 import "@/styles/globals.css"; // Importa Tailwind correctamente
 
 export const metadata = {
-  title: "Dashboard",
-  description: "Dashboard de sensores en Next.js",
+  title: "HSLV - Monitor de Temperatura, humedad y presión atmosférica",
+  description: "Panel de sensores de Humedad, Temperatura, Presión atmosférica y Luz ambiente",
 };
 
 export default function RootLayout({ children }) {
