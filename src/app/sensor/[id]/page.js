@@ -89,7 +89,7 @@ const SensorDetail = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold">Detalles del Sensor: {sensorName || id}</h1>
+      <h1 className="text-2xl font-bold">{sensorName || id}</h1>
       <div className="mb-4">
         <label className="mr-2">Selecciona el periodo:</label>
         <select value={timeRange} onChange={(e) => setTimeRange(Number(e.target.value))} className="border p-1 rounded">
