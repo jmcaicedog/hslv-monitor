@@ -58,7 +58,7 @@ export default function Home() {
               <Card 
                 key={sensor.id || sensor.title} 
                 {...sensor} 
-                showPressureAndLight={sensor.pressure !== undefined && sensor.light !== undefined} 
+                showPressureAndLight={sensor.pressure !== null && sensor.light !== null} 
                 layout="iconsOnly"
               />
             ))}
