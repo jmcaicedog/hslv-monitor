@@ -3,7 +3,7 @@ export default function Card({ title, temperature, humidity, voltage, pressure, 
   return (
     <div className="bg-white shadow-md p-4 rounded-lg flex flex-col items-center w-full max-w-md mx-auto">
       <p className="text-sm font-semibold mb-3 text-center">{title}</p>
-      <div className="flex flex-wrap justify-center w-full gap-2">
+      <div className="flex flex-wrap justify-center w-full gap-2 sm:gap-4">
         <div className="flex flex-col items-center">
           <FaTemperatureHigh className="text-red-500 text-xl" />
           <p className="text-sm">{temperature}°C</p>
