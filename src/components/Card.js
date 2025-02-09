@@ -1,10 +1,13 @@
 import { FaTemperatureHigh, FaTint, FaBolt, FaCompressArrowsAlt, FaLightbulb } from "react-icons/fa";
 import Link from "next/link";
+import { useMemo } from "react";
 
 export default function Card({ id, title, temperature, humidity, voltage, pressure, light, createdAt, showPressureAndLight }) {
+  const formattedDate = useMemo(() => new Date(createdAt).toLocaleString(), [createdAt]);
+
   return (
-    <Link href={`/sensor/${id}`}>
-      <div className="bg-white shadow-md p-4 rounded-lg flex flex-col items-center w-full max-w-md mx-auto cursor-pointer hover:bg-gray-100 transition">
+    <div className="bg-white shadow-md p-4 rounded-lg flex flex-col items-center w-full max-w-md mx-auto cursor-pointer hover:bg-gray-100 transition">
+      <Link href={`/sensor/${id}`} className="w-full">
         <p className="text-sm font-semibold mb-3 text-center">{title}</p>
         <div className="flex flex-wrap justify-center w-full gap-2 sm:gap-4">
           <div className="flex flex-col items-center">
@@ -32,8 +35,8 @@ export default function Card({ id, title, temperature, humidity, voltage, pressu
             </>
           )}
         </div>
-        <p className="text-xs text-gray-500 mt-2">{new Date(createdAt).toLocaleString()}</p>
-      </div>
-    </Link>
+        <p className="text-xs text-center text-gray-500 mt-2">Última actualización: {formattedDate}</p>
+      </Link>
+    </div>
   );
 }
