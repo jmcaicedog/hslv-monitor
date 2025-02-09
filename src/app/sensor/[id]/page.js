@@ -144,9 +144,9 @@ const SensorDetail = () => {
           </div>
         ))}
       </div>
-      <div className="data-table mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
         {Object.keys(dailyMinMax).map((key) => (
-          <div key={key} className="bg-white shadow-md rounded-lg p-4 border border-gray-300">
+          <div key={key} className="bg-white shadow-md rounded-lg p-4 border border-gray-300 data-table">
             <h2 className="text-lg font-semibold">Histórico de {key.charAt(0).toUpperCase() + key.slice(1)}</h2>
             <table className="w-full mt-4 border-collapse border border-gray-300">
               <thead>
