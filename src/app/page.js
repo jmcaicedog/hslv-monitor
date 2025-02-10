@@ -6,6 +6,8 @@ import Card from "@/components/Card";
 import SearchBar from "@/components/SearchBar";
 import Sidebar from "@/components/Sidebar";
 import { fetchSensorsData } from "@/utils/api";
+import { LogOut } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -62,6 +64,15 @@ export default function Home() {
             <p className="text-white p-4">Cargando ubicaciones...</p>
           )}
         </div>
+        <div className="absolute top-4 right-6">
+            <button 
+              onClick={() => signOut()} 
+              className="bg-red-600 hover:bg-red-500 text-white p-2 rounded-full flex items-center shadow-lg"
+              title="Cerrar sesión"
+              >
+              <LogOut size={20} />
+            </button>
+    </div>
         <div className="flex-1 p-6 pt-16 sm:p-6 mal-0 sm:ml-64">
           <p className="mb-2">
             {selectedLocation
