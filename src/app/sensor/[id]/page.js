@@ -147,7 +147,7 @@ const SensorDetail = () => {
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
         {Object.keys(dailyMinMax).map((key) => (
           <div key={key} className="bg-white shadow-md rounded-lg p-4 border border-gray-300 data-table">
-            <h2 className="text-lg font-semibold">Histórico de {key.charAt(0).toUpperCase() + key.slice(1)}</h2>
+            <h2 className="text-lg font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)} ({unitMap[key]})</h2>
             <table className="w-full mt-4 border-collapse border border-gray-300">
               <thead>
                 <tr className="bg-gray-100">
@@ -159,9 +159,9 @@ const SensorDetail = () => {
               <tbody>
                 {Object.keys(dailyMinMax[key]).slice(-30).map(date => (
                   <tr key={date}>
-                    <td className="border border-gray-300 p-2">{date}</td>
-                    <td className="border border-gray-300 p-2">{dailyMinMax[key][date].min}</td>
-                    <td className="border border-gray-300 p-2">{dailyMinMax[key][date].max}</td>
+                    <td className="border text-center border-gray-300 p-2">{date}</td>
+                    <td className="border text-center border-gray-300 p-2">{dailyMinMax[key][date].min} ({unitMap[key]})</td>
+                    <td className="border text-center border-gray-300 p-2">{dailyMinMax[key][date].max} ({unitMap[key]})</td>
                   </tr>
                 ))}
               </tbody>
