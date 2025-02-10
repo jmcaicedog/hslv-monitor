@@ -131,7 +131,7 @@ const SensorDetail = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredData.length > 0 && Object.keys(dailyMinMax).map((key) => (
           <div key={key} className="sensor-chart bg-white shadow-md rounded-lg p-4 border border-gray-300">
-            <h2 className="text-lg font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)} ({unitMap[key]})</h2>
+            <h2 className="text-lg text-center font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)} ({unitMap[key]})</h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={filteredData}>
                 <XAxis dataKey="timestamp" tickFormatter={(time) => new Date(time).toLocaleString()} />
@@ -147,7 +147,7 @@ const SensorDetail = () => {
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
         {Object.keys(dailyMinMax).map((key) => (
           <div key={key} className="bg-white shadow-md rounded-lg p-4 border border-gray-300 data-table">
-            <h2 className="text-lg font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)} ({unitMap[key]})</h2>
+            <h2 className="text-lg text-center font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)} ({unitMap[key]})</h2>
             <table className="w-full mt-4 border-collapse border border-gray-300">
               <thead>
                 <tr className="bg-gray-100">
