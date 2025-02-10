@@ -1,4 +1,5 @@
 "use client";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import Card from "@/components/Card";
@@ -7,6 +8,7 @@ import Sidebar from "@/components/Sidebar";
 import { fetchSensorsData } from "@/utils/api";
 
 export default function Home() {
+  const { data: session, status } = useSession();
   const [sensors, setSensors] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,7 +17,6 @@ export default function Home() {
     async function loadSensors() {
       try {
         const data = await fetchSensorsData();
-        // Redondear valores a 2 decimales
         const formattedData = data.map(sensor => ({
           ...sensor,
           temperature: sensor.temperature ? parseFloat(sensor.temperature).toFixed(2) : "N/A",
@@ -32,16 +33,17 @@ export default function Home() {
     loadSensors();
   }, []);
 
-  // Filtrar sensores por ubicación seleccionada y término de búsqueda
-  const filteredSensors = sensors.filter(sensor => 
-    (!selectedLocation || sensor.description === selectedLocation) &&
-    (searchTerm === "" || sensor.title.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  if (status === "loading") {
+    return <p>Cargando sesión...</p>;
+  }
+
+  if (!session) {
+    return <p>No estás autenticado.</p>;
+  }
 
   return (
     <Layout>
       <div className="flex">
-        {/* Componente de menú lateral fijo sin scrollbar visible y con menor espacio entre elementos */}
         <div className="w-0 sm:w-64 fixed h-full overflow-hidden bg-gray-800 text-white p-0 sm:p-4">
           <Sidebar locations={sensors.map(s => s.description)} onSelectLocation={setSelectedLocation} itemSpacing="space-y-0" />
         </div>
@@ -51,10 +53,9 @@ export default function Home() {
               ? `📍 Mostrando sensores de: ${selectedLocation}` 
               : "🌍 Mostrando todos los sensores"}
           </p>
-          {/* Componente de barra de búsqueda */}
           <SearchBar value={searchTerm} onChange={setSearchTerm} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {filteredSensors.map(sensor => (
+            {sensors.map(sensor => (
               <Card 
                 key={sensor.id || sensor.title} 
                 {...sensor} 
