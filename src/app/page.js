@@ -64,7 +64,7 @@ export default function Home() {
             <p className="text-white p-4">Cargando ubicaciones...</p>
           )}
         </div>
-        <div className="absolute top-4 right-6">
+        <div className=" fixed top-[18px] sm:top-4 right-[80px] sm:right-6">
             <button 
               onClick={() => signOut()} 
               className="bg-red-600 hover:bg-red-500 text-white p-2 rounded-full flex items-center shadow-lg"
