@@ -151,10 +151,22 @@ const minMaxValues = Object.keys(dailyMinMax).reduce((acc, key) => {
         {filteredData.length > 0 && Object.keys(dailyMinMax).map((key) => (
           <div key={key} className="sensor-chart bg-white shadow-md rounded-lg p-4 border border-gray-300">
             <h2 className="text-lg text-center font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)} ({unitMap[key]})</h2>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={400}>
             <LineChart data={filteredData}>
-  <XAxis dataKey="timestamp" tickFormatter={(time) => new Date(time).toLocaleString()} />
-  <YAxis />
+            <XAxis 
+  dataKey="timestamp" 
+  tickFormatter={(time) => new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(time))}
+/>
+
+  <YAxis 
+  domain={[
+    minMaxValues[key].min * 0.95,  
+    minMaxValues[key].max * 1.05   
+  ]}
+  tickFormatter={(value) => value.toFixed(2)}  // Redondea los valores a 2 decimales
+/>
+
+
   <Tooltip />
   <CartesianGrid strokeDasharray="3 3" />
 
