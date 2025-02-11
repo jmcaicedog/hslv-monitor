@@ -31,7 +31,7 @@ const unitMap = {
   temperatura: "°C",
   humedad: "%",
   voltaje: "V",
-  presion: "hPa",
+  presion: "KPa",
   luz: "lx",
 };
 

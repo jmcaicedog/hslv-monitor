@@ -45,7 +45,7 @@ export default function Card({
             <>
               <div className="flex flex-col items-center">
                 <FaCompressArrowsAlt className="text-green-500 text-xl" />
-                <p className="text-sm">{pressure} hPa</p>
+                <p className="text-sm">{pressure} KPa</p>
               </div>
               <div className="flex flex-col items-center">
                 <FaLightbulb className="text-yellow-400 text-xl" />
