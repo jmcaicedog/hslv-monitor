@@ -7,7 +7,17 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { useParams } from 'next/navigation';
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, ReferenceDot } from 'recharts';
+
+const calculateMinMax = (data, key) => {
+  if (!data || data.length === 0) return { min: null, max: null };
+  
+  const min = Math.min(...data.map(d => parseFloat(d[key])));
+  const max = Math.max(...data.map(d => parseFloat(d[key])));
+
+  return { min, max };
+};
+
 
 const unitMap = {
   temperatura: '°C',
@@ -16,6 +26,8 @@ const unitMap = {
   presion: 'hPa',
   luz: 'lx',
 };
+
+
 
 const SensorDetail = () => {
   const router = useRouter();
@@ -26,6 +38,7 @@ const SensorDetail = () => {
   const [dailyMinMax, setDailyMinMax] = useState({});
   const [sensorName, setSensorName] = useState("");
   const [timeRange, setTimeRange] = useState(24); // En horas
+  
 
   useEffect(() => {
     if (!id) return;
@@ -69,6 +82,7 @@ const SensorDetail = () => {
 
     const dailyValues = {};
     
+    
     filtered.forEach(entry => {
       const date = entry.timestamp.toISOString().split('T')[0];
       Object.keys(entry).forEach(key => {
@@ -109,6 +123,11 @@ const SensorDetail = () => {
     doc.save(`sensor_${id}.pdf`);
 };
 
+const minMaxValues = Object.keys(dailyMinMax).reduce((acc, key) => {
+  acc[key] = calculateMinMax(filteredData, key);
+  return acc;
+}, {});
+
 
   return (
     <div className="p-6">
@@ -133,13 +152,28 @@ const SensorDetail = () => {
           <div key={key} className="sensor-chart bg-white shadow-md rounded-lg p-4 border border-gray-300">
             <h2 className="text-lg text-center font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)} ({unitMap[key]})</h2>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={filteredData}>
-                <XAxis dataKey="timestamp" tickFormatter={(time) => new Date(time).toLocaleString()} />
-                <YAxis />
-                <Tooltip labelFormatter={(time) => new Date(time).toLocaleString()} />
-                <CartesianGrid strokeDasharray="3 3" />
-                <Line type="monotone" dataKey={key} stroke="#8884d8" strokeWidth={2} dot={false} />
-              </LineChart>
+            <LineChart data={filteredData}>
+  <XAxis dataKey="timestamp" tickFormatter={(time) => new Date(time).toLocaleString()} />
+  <YAxis />
+  <Tooltip />
+  <CartesianGrid strokeDasharray="3 3" />
+
+  <Line type="monotone" dataKey={key} stroke="#8884d8" strokeWidth={2} dot={false} />
+
+  {/* Puntos de valores máximo y mínimo */}
+  <ReferenceDot x={new Date(filteredData.find(d => parseFloat(d[key]) === minMaxValues[key].min)?.timestamp).getTime()} 
+              y={minMaxValues[key].min} 
+              fill="red" 
+              label={{ value: `${minMaxValues[key].min}`, position: "bottom" }} />
+
+<ReferenceDot x={new Date(filteredData.find(d => parseFloat(d[key]) === minMaxValues[key].max)?.timestamp).getTime()} 
+              y={minMaxValues[key].max} 
+              fill="green" 
+              label={{ value: `${minMaxValues[key].max}`, position: "bottom" }} />
+
+
+
+</LineChart>
             </ResponsiveContainer>
           </div>
         ))}
