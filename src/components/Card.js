@@ -1,9 +1,28 @@
-import { FaTemperatureHigh, FaTint, FaBolt, FaCompressArrowsAlt, FaLightbulb } from "react-icons/fa";
+import {
+  FaTemperatureHigh,
+  FaTint,
+  FaBolt,
+  FaCompressArrowsAlt,
+  FaLightbulb,
+} from "react-icons/fa";
 import Link from "next/link";
 import { useMemo } from "react";
 
-export default function Card({ id, title, temperature, humidity, voltage, pressure, light, createdAt, showPressureAndLight }) {
-  const formattedDate = useMemo(() => new Date(createdAt).toLocaleString(), [createdAt]);
+export default function Card({
+  id,
+  title,
+  temperature,
+  humidity,
+  voltage,
+  pressure,
+  light,
+  createdAt,
+  showPressureAndLight,
+}) {
+  const formattedDate = useMemo(
+    () => new Date(createdAt).toLocaleString(),
+    [createdAt]
+  );
 
   return (
     <div className="bg-white shadow-md p-4 rounded-lg flex flex-col items-center w-full max-w-md mx-auto cursor-pointer hover:bg-gray-100 transition">
@@ -35,7 +54,9 @@ export default function Card({ id, title, temperature, humidity, voltage, pressu
             </>
           )}
         </div>
-        <p className="text-xs text-center text-gray-500 mt-2">Última actualización: {formattedDate}</p>
+        <p className="text-xs text-center text-gray-500 mt-2">
+          Última actualización: {formattedDate}
+        </p>
       </Link>
     </div>
   );
