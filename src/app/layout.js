@@ -8,22 +8,46 @@ import "../styles/globals.css";
 
 export default function RootLayout({ children }) {
   useEffect(() => {
-    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch((err) => {
-        console.error("Service Worker registration failed:", err);
-      });
+    if (
+      typeof window !== "undefined" &&
+      typeof screen !== "undefined" &&
+      screen.orientation
+    ) {
+      const updateOrientation = () => {
+        setTimeout(() => {
+          if (window.innerWidth < 768) {
+            screen.orientation
+              .lock("portrait")
+              .catch((err) =>
+                console.warn("No se pudo bloquear orientación", err)
+              );
+          } else {
+            screen.orientation
+              .lock("landscape")
+              .catch((err) =>
+                console.warn("No se pudo bloquear orientación", err)
+              );
+          }
+        }, 100);
+      };
+
+      updateOrientation();
+      window.addEventListener("resize", updateOrientation);
+
+      return () => {
+        window.removeEventListener("resize", updateOrientation);
+      };
     }
   }, []);
 
   return (
     <html lang="es">
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-      </head>
       <body>
         <SessionProvider>
-          <AuthGuard>{children}</AuthGuard>
-          <InstallButton />
+          <AuthGuard>
+            <InstallButton />
+            {children}
+          </AuthGuard>
         </SessionProvider>
       </body>
     </html>
