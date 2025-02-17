@@ -1,13 +1,13 @@
 {
-    "name": "Monitor de Humedad y Temperatura",
-    "short_name": "MonitorHT",
+    "name": "HSLV Monitor",
+    "short_name": "HSLV-Monitor",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#000000",
     "icons": [
       {
-        "src": "/icon.png",
+        "src": "/public/icon.png",
         "sizes": "512x512",
         "type": "image/png"
       }
