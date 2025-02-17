@@ -7,11 +7,23 @@ import InstallButton from "@/components/InstallButton";
 import "../styles/globals.css";
 
 export default function RootLayout({ children }) {
-  const [isPortrait, setIsPortrait] = useState(null);
+  const [orientationState, setOrientationState] = useState(null);
 
   useEffect(() => {
     const updateOrientation = () => {
-      setIsPortrait(window.innerWidth < 768);
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      if (width < 768) {
+        // Teléfonos: Solo vertical
+        setOrientationState(height > width ? "allowed" : "blocked");
+      } else if (width >= 768 && width < 1024) {
+        // Tabletas: Solo horizontal
+        setOrientationState(width > height ? "allowed" : "blocked");
+      } else {
+        // Computadoras: Sin restricciones
+        setOrientationState("allowed");
+      }
     };
 
     updateOrientation();
@@ -22,7 +34,7 @@ export default function RootLayout({ children }) {
     };
   }, []);
 
-  if (isPortrait === null) return null; // Evita el desajuste de hidratación
+  if (orientationState === null) return null; // Evita el desajuste de hidratación
 
   return (
     <html lang="es">
@@ -33,7 +45,8 @@ export default function RootLayout({ children }) {
         />
         <style>
           {`
-            @media (max-width: 767px) and (orientation: landscape) {
+            @media (max-width: 767px) and (orientation: landscape),
+                   (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
               body {
                 display: flex;
                 justify-content: center;
@@ -51,22 +64,13 @@ export default function RootLayout({ children }) {
                 text-align: center;
               }
             }
-            @media (min-width: 768px) and (orientation: portrait) {
-              body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                background: black;
-                color: white;
-                font-size: 18px;
-              }
-              .content {
+            @media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape),
+                   (min-width: 1024px) {
+              .rotate-warning {
                 display: none;
               }
-              .rotate-warning {
+              .content {
                 display: block;
-                text-align: center;
               }
             }
           `}
@@ -78,12 +82,12 @@ export default function RootLayout({ children }) {
             <InstallButton />
             <div
               className={
-                isPortrait
-                  ? "content"
-                  : "rotate-warning flex h-screen m-auto items-center justify-center bg-black text-white text-2xl"
+                orientationState === "blocked" ? "rotate-warning" : "content"
               }
             >
-              {isPortrait ? children : "¡Rota tu dispositivo!"}
+              {orientationState === "blocked"
+                ? "Por favor, rota tu dispositivo para continuar."
+                : children}
             </div>
           </AuthGuard>
         </SessionProvider>
