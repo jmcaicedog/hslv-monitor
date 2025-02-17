@@ -2,6 +2,8 @@
 import { useEffect } from "react";
 import { SessionProvider } from "next-auth/react";
 import AuthGuard from "@/components/AuthGuard";
+import InstallButton from "@/components/InstallButton";
+
 import "../styles/globals.css";
 
 export default function RootLayout({ children }) {
@@ -21,6 +23,7 @@ export default function RootLayout({ children }) {
       <body>
         <SessionProvider>
           <AuthGuard>{children}</AuthGuard>
+          <InstallButton />
         </SessionProvider>
       </body>
     </html>
