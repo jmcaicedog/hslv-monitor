@@ -13,7 +13,10 @@ export default function InstallButton() {
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
   }, []);
 
   const handleInstall = () => {
@@ -29,12 +32,28 @@ export default function InstallButton() {
     }
   };
 
+  // Para debugging: Verifica en consola si el evento se dispara
+  useEffect(() => {
+    console.log("isInstallable:", isInstallable);
+  }, [isInstallable]);
+
   return isInstallable ? (
     <button
       onClick={handleInstall}
-      style={{ padding: "10px", fontSize: "16px", cursor: "pointer" }}
+      style={{
+        padding: "10px",
+        fontSize: "16px",
+        cursor: "pointer",
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        background: "#007bff",
+        color: "#fff",
+        border: "none",
+        borderRadius: "5px",
+      }}
     >
-      Instalar la App
+      📲 Instalar App
     </button>
   ) : null;
 }
