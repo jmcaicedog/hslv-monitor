@@ -4,6 +4,7 @@ import {
   FaBolt,
   FaCompressArrowsAlt,
   FaLightbulb,
+  FaCircle,
 } from "react-icons/fa";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -18,6 +19,7 @@ export default function Card({
   light,
   createdAt,
   showPressureAndLight,
+  status,
 }) {
   const formattedDate = useMemo(
     () => new Date(createdAt).toLocaleString(),
@@ -54,9 +56,17 @@ export default function Card({
             </>
           )}
         </div>
-        <p className="text-xs text-center text-gray-500 mt-2">
-          Última actualización: {formattedDate}
-        </p>
+        <div className="flex justify-center items-center text-xs text-center text-gray-500 mt-2">
+          <strong>ACTUALIZACIÓN: </strong> {formattedDate}{" "}
+          <strong> ESTADO:</strong>{" "}
+          <FaCircle
+            className={
+              status == 0
+                ? "text-red-400 text-xl pl-[5px]"
+                : "text-green-400 text-xl pl-[5px]"
+            }
+          />
+        </div>
       </Link>
     </div>
   );

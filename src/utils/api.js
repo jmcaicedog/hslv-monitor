@@ -27,6 +27,7 @@ export async function fetchSensorsData() {
       pressure: sensorData.field9?.value ?? null, // Presión atmosférica si existe
       light: sensorData.field6?.value ?? null, // Luz si existe
       createdAt: sensorData.field1?.created_at ?? "N/A",
+      status: channel.net,
     };
   });
 }
