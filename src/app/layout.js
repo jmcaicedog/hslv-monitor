@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
 
       if (width < 768) {
         // Teléfonos: Solo vertical
-        setOrientationState(height > width ? "allowed" : "blocked");
+        setOrientationState(height >= width ? "allowed" : "blocked");
       } else if (width >= 768 && width < 1024) {
         // Tabletas: Solo horizontal
         setOrientationState(width > height ? "allowed" : "blocked");
@@ -45,8 +45,25 @@ export default function RootLayout({ children }) {
         />
         <style>
           {`
-            @media (max-width: 767px) and (orientation: landscape),
-                   (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+            @media (max-width: 767px) and (orientation: landscape) {
+              body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background: black;
+                color: white;
+                font-size: 18px;
+              }
+              .content {
+                display: none;
+              }
+              .rotate-warning {
+                display: block;
+                text-align: center;
+              }
+            }
+            @media (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
               body {
                 display: flex;
                 justify-content: center;
@@ -85,9 +102,14 @@ export default function RootLayout({ children }) {
                 orientationState === "blocked" ? "rotate-warning" : "content"
               }
             >
-              {orientationState === "blocked"
-                ? "Por favor, rota tu dispositivo para continuar."
-                : children}
+              {orientationState === "blocked" ? (
+                "Por favor, rota tu dispositivo para continuar."
+              ) : (
+                <>
+                  <InstallButton />
+                  {children}
+                </>
+              )}
             </div>
           </AuthGuard>
         </SessionProvider>
