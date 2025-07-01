@@ -3,14 +3,16 @@ import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
+const publicRoutes = ["/login", "/api/auth/error"];
+
 export default function AuthGuard({ children }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (status === "unauthenticated" && pathname !== "/login") {
-      router.replace("/login"); // Redirigir solo si no estamos ya en /login
+    if (status === "unauthenticated" && !publicRoutes.includes(pathname)) {
+      router.replace("/login");
     }
   }, [status, router, pathname]);
 
@@ -22,5 +24,6 @@ export default function AuthGuard({ children }) {
     );
   }
 
-  return session || pathname === "/login" ? children : null;
+  // Permitir acceso si hay sesión o si está en rutas públicas
+  return session || publicRoutes.includes(pathname) ? children : null;
 }
