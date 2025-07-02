@@ -3,6 +3,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function AuthErrorPage() {
   const searchParams = useSearchParams();
@@ -20,13 +21,12 @@ export default function AuthErrorPage() {
       <h1 className="text-3xl font-bold mb-4 text-amber-400">
         Error de Autenticación
       </h1>
-      <p className="text-lg mb-6">{message}</p>
-      <a
+      <Link
         href="/"
         className="mt-6 inline-block px-5 py-2 rounded-md bg-white text-gray-800 font-semibold hover:bg-gray-100 transition"
       >
         Regresar a la página principal
-      </a>
+      </Link>
     </div>
   );
 }
