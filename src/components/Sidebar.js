@@ -25,7 +25,7 @@ export default function Sidebar({ locations, onSelectLocation }) {
           ✖
         </button>
         <h2 className="text-xl font-bold">Ubicaciones</h2>
-        <ul className="mt-4 space-y-2">
+        <ul className="mt-4 space-y-2 overflow-y-auto max-h-[calc(100vh-8rem)] pr-2 hide-scrollbar">
           <li
             className="cursor-pointer hover:bg-gray-700 p-2 rounded font-bold"
             onClick={() => {
