@@ -14,6 +14,7 @@ export default function Home() {
   const [sensors, setSensors] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+
   const filteredSensors = sensors.filter((sensor) => {
     const matchLocation = selectedLocation
       ? sensor.description === selectedLocation
