@@ -23,8 +23,10 @@ export async function loadCsvData(channelId) {
             parsedRow.humedad = parseFloat(row["field2(Humedad)"]);
           if (row["field3(Voltage)"])
             parsedRow.voltaje = parseFloat(row["field3(Voltage)"]);
-          if (row["field9"]) parsedRow.presion = parseFloat(row["field9"]);
-          if (row["field6"]) parsedRow.luz = parseFloat(row["field6"]);
+          if (row["field9(Presión atmosférica)"])
+            parsedRow.presion = parseFloat(row["field9(Presión atmosférica)"]);
+          if (row["field6(Light)"])
+            parsedRow.luz = parseFloat(row["field6(Light)"]);
 
           return parsedRow;
         });
