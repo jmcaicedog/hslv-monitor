@@ -39,7 +39,8 @@ export const authOptions = {
   callbacks: {
     async signIn({ user }) {
       // Solo permitir usuarios con email autorizado
-      return allowedEmails.includes(user.email);
+      //return allowedEmails.includes(user.email);
+      return true;
     },
     async jwt({ token, user }) {
       if (user) {
