@@ -6,7 +6,7 @@ export default function Sidebar({ locations, onSelectLocation }) {
   return (
     <>
       <button
-        className={`fixed top-4 right-4 z-50 bg-gray-700 text-white px-4 py-2 rounded-md sm:hidden ${
+        className={`fixed top-4 right-4 z-50 bg-gray-700 text-white px-4 py-2 rounded-md lg:hidden ${
           isOpen ? "hidden" : "block"
         }`}
         onClick={() => setIsOpen(true)}
@@ -16,10 +16,10 @@ export default function Sidebar({ locations, onSelectLocation }) {
       <aside
         className={`fixed inset-0 bg-gray-800 text-white p-4 transition-transform transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } sm:relative sm:w-1/4 md:w-1/5 lg:w-full sm:translate-x-0 md:translate-x-0`}
+        } lg:relative lg:w-64 lg:translate-x-0`}
       >
         <button
-          className="absolute top-4 right-4 text-white text-2xl sm:hidden"
+          className="absolute top-4 right-4 text-white text-2xl lg:hidden"
           onClick={() => setIsOpen(false)}
         >
           ✖

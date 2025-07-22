@@ -1,5 +1,5 @@
 "use client";
-
+import { loadCsvData } from "@/utils/loadCsvData";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaTimes, FaDownload } from "react-icons/fa";
@@ -19,12 +19,14 @@ import {
 } from "recharts";
 
 const calculateMinMax = (data, key) => {
-  if (!data || data.length === 0) return { min: null, max: null };
+  const numeric = data.map((d) => parseFloat(d[key])).filter((v) => !isNaN(v));
 
-  const min = Math.min(...data.map((d) => parseFloat(d[key])));
-  const max = Math.max(...data.map((d) => parseFloat(d[key])));
+  if (numeric.length === 0) return { min: null, max: null };
 
-  return { min, max };
+  return {
+    min: Math.min(...numeric),
+    max: Math.max(...numeric),
+  };
 };
 
 const unitMap = {
@@ -44,6 +46,25 @@ const SensorDetail = () => {
   const [dailyMinMax, setDailyMinMax] = useState({});
   const [sensorName, setSensorName] = useState("");
   const [timeRange, setTimeRange] = useState(24); // En horas
+  const [selectedMonth, setSelectedMonth] = useState(null);
+
+  // Últimos 12 meses
+  const getLast12Months = () => {
+    const now = new Date();
+    return Array.from({ length: 12 }, (_, i) => {
+      const date = new Date(now.getFullYear(), now.getMonth() - i - 1, 1);
+      return {
+        label: date.toLocaleString("default", {
+          month: "long",
+          year: "numeric",
+        }),
+        value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}`,
+      };
+    });
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -62,7 +83,9 @@ const SensorDetail = () => {
 
         const allData = jsonData.feeds
           .map((feed) => {
-            let entry = { timestamp: new Date(feed.created_at) };
+            let entry = {
+              timestamp: new Date(feed.created_at).getTime(),
+            };
             if (feed.field1)
               entry.temperatura = parseFloat(feed.field1.avg).toFixed(2);
             if (feed.field2)
@@ -85,18 +108,128 @@ const SensorDetail = () => {
   }, [id]);
 
   useEffect(() => {
+    if (!selectedMonth || !id) return;
+
+    const fetchCsv = async () => {
+      const allCsvData = await loadCsvData(id);
+
+      const [year, month] = selectedMonth.split("-");
+      const filtered = allCsvData.filter((d) => {
+        if (!d.timestamp || isNaN(new Date(d.timestamp))) return false;
+        const dDate = new Date(d.timestamp);
+        const entryYear = dDate.getFullYear();
+        const entryMonth = dDate.getMonth(); // 0-based
+        const selectedYear = parseInt(year, 10);
+        const selectedMonth = parseInt(month, 10) - 1; // ajustamos a 0-based
+
+        return entryYear === selectedYear && entryMonth === selectedMonth;
+      });
+
+      const reversed = filtered
+        .map((entry) => {
+          const parsed = new Date(entry.timestamp);
+          const timestamp = isNaN(parsed.getTime()) ? null : parsed.getTime();
+
+          const numericEntry = Object.entries(entry).reduce(
+            (acc, [key, value]) => {
+              if (key === "timestamp") return acc;
+              const num = parseFloat(value);
+              acc[key] = isNaN(num) ? null : num; // 👈 IMPORTANTE: guardar como número
+              return acc;
+            },
+            {}
+          );
+
+          return {
+            ...numericEntry,
+            timestamp,
+          };
+        })
+        .filter((entry) => entry.timestamp !== null)
+        .reverse();
+
+      setFilteredData(reversed);
+
+      const dailyValues = {};
+
+      reversed.forEach((entry) => {
+        const dateObj = new Date(entry.timestamp);
+        const date = dateObj.toISOString().split("T")[0];
+
+        Object.keys(entry).forEach((key) => {
+          if (key !== "timestamp" && entry[key] != null && !isNaN(entry[key])) {
+            if (!dailyValues[key]) dailyValues[key] = {};
+            if (!dailyValues[key][date]) {
+              dailyValues[key][date] = {
+                min: entry[key],
+                max: entry[key],
+              };
+            } else {
+              dailyValues[key][date].min = Math.min(
+                dailyValues[key][date].min,
+                entry[key]
+              );
+              dailyValues[key][date].max = Math.max(
+                dailyValues[key][date].max,
+                entry[key]
+              );
+            }
+          }
+        });
+      });
+
+      setDailyMinMax(dailyValues);
+    };
+
+    fetchCsv();
+  }, [selectedMonth, id]);
+
+  useEffect(() => {
     if (data.length === 0) return;
 
     const now = new Date();
     const startTime = new Date(now.getTime() - timeRange * 60 * 60 * 1000);
 
     const filtered = data.filter((entry) => entry.timestamp >= startTime);
-    setFilteredData(filtered.reverse());
+    if (!selectedMonth) {
+      const reversed = filtered.reverse();
+      setFilteredData(reversed);
+
+      const dailyValues = {};
+
+      reversed.forEach((entry) => {
+        const date = new Date(entry.timestamp).toISOString().split("T")[0];
+
+        Object.keys(entry).forEach((key) => {
+          if (key !== "timestamp") {
+            if (!dailyValues[key]) dailyValues[key] = {};
+            if (!dailyValues[key][date]) {
+              dailyValues[key][date] = {
+                min: parseFloat(entry[key]),
+                max: parseFloat(entry[key]),
+              };
+            } else {
+              dailyValues[key][date].min = Math.min(
+                dailyValues[key][date].min,
+                parseFloat(entry[key])
+              );
+              dailyValues[key][date].max = Math.max(
+                dailyValues[key][date].max,
+                parseFloat(entry[key])
+              );
+            }
+          }
+        });
+      });
+
+      setDailyMinMax(dailyValues);
+    }
 
     const dailyValues = {};
 
     filtered.forEach((entry) => {
-      const date = entry.timestamp.toISOString().split("T")[0];
+      const date = new Date(entry.timestamp).toISOString().split("T")[0];
+
       Object.keys(entry).forEach((key) => {
         if (key !== "timestamp") {
           if (!dailyValues[key]) dailyValues[key] = {};
@@ -174,93 +307,136 @@ const SensorDetail = () => {
           </button>
         </div>
       </div>
-      <div className="mb-4">
-        <label className="mr-2">Selecciona el periodo:</label>
-        <select
-          value={timeRange}
-          onChange={(e) => setTimeRange(Number(e.target.value))}
-          className="border p-1 rounded"
-        >
-          <option value={24}>Últimas 24 horas</option>
-          <option value={72}>Últimos 3 días</option>
-          <option value={168}>Última semana</option>
-          <option value={720}>Último mes</option>
-        </select>
+      <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
+        <div>
+          <label className="mr-2">Selecciona el periodo:</label>
+          <select
+            value={timeRange}
+            onChange={(e) => {
+              setTimeRange(Number(e.target.value));
+              setSelectedMonth(null); // ✅ Reinicia selección de mes
+            }}
+            className="border p-1 rounded"
+          >
+            <option value={24}>Últimas 24 horas</option>
+            <option value={72}>Últimos 3 días</option>
+            <option value={168}>Última semana</option>
+            <option value={720}>Último mes</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="mr-2">Selecciona el mes:</label>
+          <select
+            value={selectedMonth || ""}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="border p-1 rounded"
+          >
+            <option value="">Selecciona el mes</option>
+            {getLast12Months().map((month) => (
+              <option key={month.value} value={month.value}>
+                {month.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
+
+      {selectedMonth && filteredData.length === 0 && (
+        <div className="bg-gray-800 text-white border border-gray-800 rounded-md p-4 text-center shadow-md mb-6 mt-6">
+          <p className="text-base font-medium">
+            No hay datos disponibles para el mes seleccionado.
+          </p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredData.length > 0 &&
-          Object.keys(dailyMinMax).map((key) => (
-            <div
-              key={key}
-              className="sensor-chart bg-white shadow-md rounded-lg p-4 border border-gray-300"
-            >
-              <h2 className="text-lg text-center font-semibold">
-                {key.charAt(0).toUpperCase() + key.slice(1)} ({unitMap[key]})
-              </h2>
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={filteredData}>
-                  <XAxis
-                    dataKey="timestamp"
-                    tickFormatter={(time) =>
-                      new Intl.DateTimeFormat("es-ES", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      }).format(new Date(time))
-                    }
-                  />
+          Object.keys(dailyMinMax).map((key) => {
+            const chartData = filteredData.filter(
+              (d) => d[key] != null && !isNaN(d[key])
+            );
 
-                  <YAxis
-                    domain={[
-                      minMaxValues[key].min * 0.95,
-                      minMaxValues[key].max * 1.05,
-                    ]}
-                    tickFormatter={(value) => value.toFixed(2)} // Redondea los valores a 2 decimales
-                  />
+            return (
+              <div
+                key={key}
+                className="sensor-chart bg-white shadow-md rounded-lg p-4 border border-gray-300"
+              >
+                <h2 className="text-lg text-center font-semibold">
+                  {key.charAt(0).toUpperCase() + key.slice(1)} ({unitMap[key]})
+                </h2>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={chartData}>
+                    <XAxis
+                      dataKey="timestamp"
+                      tickFormatter={(time) => {
+                        const date = new Date(time);
+                        if (isNaN(date.getTime())) return "";
+                        return new Intl.DateTimeFormat("es-ES", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        }).format(date);
+                      }}
+                    />
 
-                  <Tooltip />
-                  <CartesianGrid strokeDasharray="3 3" />
+                    <YAxis
+                      domain={[
+                        minMaxValues[key].min * 0.95,
+                        minMaxValues[key].max * 1.05,
+                      ]}
+                      tickFormatter={(value) => value.toFixed(2)}
+                    />
 
-                  <Line
-                    type="monotone"
-                    dataKey={key}
-                    stroke="#8884d8"
-                    strokeWidth={2}
-                    dot={false}
-                  />
+                    <Tooltip />
+                    <CartesianGrid strokeDasharray="3 3" />
 
-                  {/* Puntos de valores máximo y mínimo */}
-                  <ReferenceDot
-                    x={new Date(
-                      filteredData.find(
-                        (d) => parseFloat(d[key]) === minMaxValues[key].min
-                      )?.timestamp
-                    ).getTime()}
-                    y={minMaxValues[key].min}
-                    fill="red"
-                    label={{
-                      value: `${minMaxValues[key].min}`,
-                      position: "bottom",
-                    }}
-                  />
+                    <Line
+                      type="monotone"
+                      dataKey={key}
+                      stroke="#8884d8"
+                      strokeWidth={2}
+                      dot={false}
+                    />
 
-                  <ReferenceDot
-                    x={new Date(
-                      filteredData.find(
-                        (d) => parseFloat(d[key]) === minMaxValues[key].max
-                      )?.timestamp
-                    ).getTime()}
-                    y={minMaxValues[key].max}
-                    fill="green"
-                    label={{
-                      value: `${minMaxValues[key].max}`,
-                      position: "bottom",
-                    }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          ))}
+                    <ReferenceDot
+                      x={
+                        chartData.find(
+                          (d) =>
+                            Math.abs(
+                              parseFloat(d[key]) - minMaxValues[key].min
+                            ) < 0.001
+                        )?.timestamp || 0
+                      }
+                      y={minMaxValues[key].min}
+                      fill="red"
+                      label={{
+                        value: `${minMaxValues[key].min}`,
+                        position: "bottom",
+                      }}
+                    />
+
+                    <ReferenceDot
+                      x={
+                        chartData.find(
+                          (d) =>
+                            Math.abs(
+                              parseFloat(d[key]) - minMaxValues[key].max
+                            ) < 0.001
+                        )?.timestamp || 0
+                      }
+                      y={minMaxValues[key].max}
+                      fill="green"
+                      label={{
+                        value: `${minMaxValues[key].max}`,
+                        position: "bottom",
+                      }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            );
+          })}
       </div>
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
         {Object.keys(dailyMinMax).map((key) => (

@@ -14,6 +14,7 @@ export default function Home() {
   const [sensors, setSensors] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+
   const filteredSensors = sensors.filter((sensor) => {
     const matchLocation = selectedLocation
       ? sensor.description === selectedLocation
@@ -64,7 +65,7 @@ export default function Home() {
     <Layout>
       <div className="flex">
         {/* Componente de menú lateral */}
-        <div className="w-0 sm:w-64 fixed h-full overflow-hidden bg-gray-800 text-white p-0 sm:p-4">
+        <div className="w-0 lg:w-64 fixed h-full overflow-hidden bg-gray-800 text-white p-0 lg:p-4">
           {sensors.length > 0 ? (
             <Sidebar
               locations={sensors.map((s) => s.description)}
@@ -75,7 +76,7 @@ export default function Home() {
             <p className="text-white p-4">Cargando ubicaciones...</p>
           )}
         </div>
-        <div className=" fixed top-[18px] sm:top-4 right-[80px] sm:right-6">
+        <div className="fixed top-[18px] lg:top-4 right-[80px] lg:right-6">
           <button
             onClick={() => signOut()}
             className="bg-red-600 hover:bg-red-500 text-white p-2 rounded-full flex items-center shadow-lg"
@@ -84,7 +85,7 @@ export default function Home() {
             <LogOut size={20} />
           </button>
         </div>
-        <div className="flex-1 p-6 pt-16 sm:p-6 mal-0 sm:ml-64">
+        <div className="flex-1 p-6 pt-16 lg:p-6 ml-0 lg:ml-64">
           <p className="mb-2">
             {selectedLocation
               ? `📍 Mostrando sensores de: ${selectedLocation}`
